@@ -48,6 +48,6 @@ Plugin de tickets, denúncias e sugestões para Minecraft.
 ### Admin
 - Recarregar plugin:
 ```sh
-tycketsystem reload ou ts reload
+ticketsystem reload ou ts reload
 ```
 Permissão: ```ticketsystem.admin```
