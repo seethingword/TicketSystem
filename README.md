@@ -50,4 +50,4 @@ Plugin de tickets, denúncias e sugestões para Minecraft.
 ```sh
 tycketsystem reload ou ts reload
 ```
-Permissão: ```tycketsystem.admin```
+Permissão: ```ticketsystem.admin```
