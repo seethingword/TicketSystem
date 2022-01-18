@@ -41,9 +41,10 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "status":
-                status(p, validateId(p, args), args[2]);
+                status(p, validateId(p, args), args);
                 break;
             case "teleport":
+            case "teleportar":
             case "tp":
                 teleport(p, validateId(p, args));
                 break;
@@ -141,25 +142,30 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
         });
     }
 
-    private void status(Player p, int ticketId, String status) {
+    private void status(Player p, int id, String[] args) {
         if (!p.hasPermission("ticketsystem.report.staff")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "report");
             return;
         }
 
-        ReportModel report = controller.fetchById(ticketId);
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "report");
+            return;
+        }
+
+        ReportModel report = controller.fetchById(id);
 
         if (report == null || report.isVerified()) {
             m.sendMessage(p, messages.getString("report.not_found"), "report");
             return;
         }
 
-        ReportStatusEnum reportStatus = ReportStatusEnum.valueOf(status);
-
-        if (reportStatus == null) {
+        if (args.length < 2 || ReportStatusEnum.valueOf(args[2]) == null) {
             m.sendMessage(p, messages.getString("report.status.invalid"), "report");
             return;
         }
+
+        ReportStatusEnum reportStatus = ReportStatusEnum.valueOf(args[2]);
 
         report.setStatus(reportStatus.getId());
 
@@ -178,6 +184,11 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
     private void teleport(Player p, int id) {
         if (!p.hasPermission("ticketsystem.report.staff")) {
             m.sendMessage(p, messages.getString("permission.no_permission", "report"));
+            return;
+        }
+
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "report");
             return;
         }
 
@@ -213,10 +224,15 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "report");
+            return;
+        }
+
         ReportModel report = controller.fetchById(id);
 
         if (report == null) {
-            m.sendMessage(p, messages.getString("report.not-found"));
+            m.sendMessage(p, messages.getString("report.not_found"), "report");
             return;
         }
 
@@ -244,10 +260,8 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
         try {
             return Integer.parseInt(args[1]);
         }
-        catch (NumberFormatException e) {
-            m.sendMessage(p, messages.getString("warnings.invalid_id"), "report");
+        catch (Exception e) {
+            return 0;
         }
-
-        return 0;
     }
 }

@@ -118,6 +118,11 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "suggestion");
+            return;
+        }
+
         SuggestionModel suggestion = controller.fetchById(id);
 
         if (suggestion == null || suggestion.getResponse() != null) {
@@ -137,6 +142,11 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
     private void response(Player p, int id, String[] args) {
         if (!p.hasPermission("ticketsystem.suggestion.staff")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "suggestion");
+            return;
+        }
+
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "suggestion");
             return;
         }
 
@@ -190,10 +200,8 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
         try {
             return Integer.parseInt(args[1]);
         }
-        catch (NumberFormatException e) {
-            m.sendMessage(p, messages.getString("warnings.invalid_id"), "suggestion");
+        catch (Exception e) {
+            return 0;
         }
-
-        return 0;
     }
 }

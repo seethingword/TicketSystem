@@ -47,7 +47,7 @@ public class SupportCommand implements CommandExecutor {
         }
 
         m.broadcastMessage(
-                str.toString().replace("<button-help>", String.format("\n[%s](suggest_command=/ticket %s  hover=%s)", messages.getString("support-announcement.button-help.label"), p.getName(), messages.getString("support-announcement.button-help.hover"))).replace("<player>", p.getName())
+                str.toString().replace("<button-help>", String.format("[%s](suggest_command=/ticket %s  hover=%s)", messages.getString("support-announcement.button-help.label"), p.getName(), messages.getString("support-announcement.button-help.hover"))).replace("<player>", p.getName())
         );
 
         return true;

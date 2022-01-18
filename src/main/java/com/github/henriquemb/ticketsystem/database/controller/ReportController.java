@@ -103,6 +103,8 @@ public class ReportController {
         ReportModel report = null;
         String sql = "SELECT * FROM report WHERE id = ?";
 
+        if (id == 0) return null;
+
         try {
             conn = ConnectionFactory.createConnection();
             PreparedStatement pstm = conn.prepareStatement(sql);

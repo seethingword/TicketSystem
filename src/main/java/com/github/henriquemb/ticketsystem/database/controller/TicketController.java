@@ -177,6 +177,8 @@ public class TicketController {
         TicketModel ticket = null;
         String sql = "SELECT * FROM ticket WHERE id = ?";
 
+        if (id == 0) return null;
+
         try {
             conn = ConnectionFactory.createConnection();
             PreparedStatement pstm = conn.prepareStatement(sql);
@@ -232,7 +234,7 @@ public class TicketController {
     }
 
     public List<TicketModel> fetchNotSendToPlayer(String player) {
-        String sql = "SELECT * FROM ticket WHERE player = ? and NOT send";
+        String sql = "SELECT * FROM ticket WHERE player = ? and NOT send and response NOT NULL";
         return searchByPlayer(sql, player);
     }
 }

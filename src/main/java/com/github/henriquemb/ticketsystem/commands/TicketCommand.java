@@ -60,6 +60,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                 break;
             case "teleport":
             case "teleportar":
+            case "tp":
                 teleport(p, validateId(p, args));
                 break;
             case "help":
@@ -161,6 +162,11 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "ticket");
+            return;
+        }
+
         TicketModel ticket = controller.fetchById(id);
 
         if (ticket == null || ticket.getResponse() != null) {
@@ -180,6 +186,11 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     private void response(Player p, int id, String[] args) {
         if (!p.hasPermission("ticketsystem.ticket.staff")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
+            return;
+        }
+
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "ticket");
             return;
         }
 
@@ -235,7 +246,17 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "ticket");
+            return;
+        }
+
         TicketModel ticket = controller.fetchById(id);
+
+        if (ticket == null) {
+            m.sendMessage(p, messages.getString("ticket.not_found"), "ticket");
+            return;
+        }
 
         if (!ticket.getPlayer().equalsIgnoreCase(p.getName())) {
             m.sendMessage(p, messages.getString("ticket.rating.not_author"), "ticket");
@@ -277,6 +298,11 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     private void teleport(Player p, int id) {
         if (!p.hasPermission("ticketsystem.ticket.staff")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
+            return;
+        }
+
+        if (id <= 0) {
+            m.sendMessage(p, messages.getString("warnings.invalid_id"), "ticket");
             return;
         }
 
@@ -412,10 +438,8 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
         try {
             return Integer.parseInt(args[1]);
         }
-        catch (NumberFormatException e) {
-            m.sendMessage(p, messages.getString("warnings.invalid_id"), "ticket");
+        catch (Exception e) {
+            return 0;
         }
-
-        return 0;
     }
 }

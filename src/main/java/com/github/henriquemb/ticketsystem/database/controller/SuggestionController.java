@@ -167,6 +167,8 @@ public class SuggestionController {
         String sql = "SELECT * FROM suggestion WHERE id = ?";
         SuggestionModel suggestion = null;
 
+        if (id == 0) return null;
+
         try {
             conn = ConnectionFactory.createConnection();
             PreparedStatement pstm = conn.prepareStatement(sql);
