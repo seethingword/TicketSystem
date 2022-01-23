@@ -10,6 +10,7 @@ import com.github.henriquemb.ticketsystem.util.Pagination;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
 import com.github.henriquemb.ticketsystem.util.ResponseMessages;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -19,7 +20,6 @@ import org.bukkit.entity.Player;
 
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 public class TicketCommand implements CommandExecutor, TabCompleter {
@@ -42,6 +42,9 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
         }
 
         switch (args[0].toLowerCase()) {
+            case "cancelall":
+                cancelAllByPlayer(p, args);
+                break;
             case "view":
             case "ver":
                 view(p, validateId(p, args));
@@ -80,12 +83,22 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
         if (sender.hasPermission("ticketsystem.suggestion.staff")) {
             if (args.length <= 1) {
+                tb.add("cancelall");
                 tb.add("help");
                 tb.add("rate");
                 tb.add("response");
                 tb.add("stats");
                 tb.add("teleport");
                 tb.add("view");
+            }
+
+            if (args[0].equalsIgnoreCase("cancelall") && args.length >= 2) {
+                Set<String> staffers = new HashSet<>();
+                controller.fetchAllAnswered().forEach(t -> {
+                    staffers.add(t.getRespondedBy());
+                });
+
+                return List.copyOf(staffers);
             }
 
             if (args[0].equalsIgnoreCase("rate") && args.length > 2) {
@@ -144,6 +157,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.ticket.staff"))
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(player,
                         Objects.requireNonNull(messages.getString("ticket.new_ticket"))
                                 .replace("<button-list>",
@@ -169,18 +183,32 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
         TicketModel ticket = controller.fetchById(id);
 
-        if (ticket == null || ticket.getResponse() != null) {
+        if (ticket == null) {
             m.sendMessage(p, messages.getString("ticket.not_found"), "ticket");
             return;
         }
 
         StringBuilder str = new StringBuilder();
-        for (String msg : messages.getStringList("ticket.view")) {
-            str.append(msg);
-            str.append("\n");
+
+        if (ticket.getResponse() != null) {
+            if (!p.hasPermission("ticketsystem.ticket.staff")) {
+                m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
+                return;
+            }
+
+            for (String msg : messages.getStringList("ticket.view-response")) {
+                str.append(msg.concat("\n"));
+            }
+
+            m.sendMessage(p, new PrepareMessages().ticketViewResponseMessage(str.toString(), ticket));
+            return;
         }
 
-        m.sendMessage(p, new PrepareMessages().ticketMessage(str.toString(), ticket));
+        for (String msg : messages.getStringList("ticket.view")) {
+            str.append(msg.concat("\n"));
+        }
+
+        m.sendMessage(p, new PrepareMessages().ticketViewMessage(str.toString(), ticket));
     }
 
     private void response(Player p, int id, String[] args) {
@@ -258,6 +286,31 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
+        if (args.length < 3) {
+            m.sendMessage(p, messages.getString("ticket.rating.use_correct"), "ticket");
+            return;
+        }
+
+        TicketRatingEnum tre = TicketRatingEnum.valueOf(args[2]);
+
+        if (tre == TicketRatingEnum.CANCELED) {
+            if (!p.hasPermission("ticketsystem.ticket.admin")) {
+                m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
+                return;
+            }
+
+            if (TicketRatingEnum.CANCELED.getRate() == ticket.getRating()) {
+                m.sendMessage(p, messages.getString("ticket.is_canceled"), "ticket");
+                return;
+            }
+
+            ticket.setRating((double) tre.getRate());
+            controller.update(ticket);
+
+            m.sendMessage(p, messages.getString("ticket.rating_canceled"), "ticket");
+            return;
+        }
+
         if (!ticket.getPlayer().equalsIgnoreCase(p.getName())) {
             m.sendMessage(p, messages.getString("ticket.rating.not_author"), "ticket");
             return;
@@ -267,13 +320,6 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
             m.sendMessage(p, messages.getString("ticket.rating.rated"), "ticket");
             return;
         }
-
-        if (args.length < 3) {
-            m.sendMessage(p, messages.getString("ticket.rating.use_correct"), "ticket");
-            return;
-        }
-
-        TicketRatingEnum tre = TicketRatingEnum.valueOf(args[2]);
 
         if (tre == null) {
             m.sendMessage(p, messages.getString("ticket.rating.invalid"), "ticket");
@@ -346,13 +392,14 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
             pagination.getPag(pag).forEach(s -> {
                 List<TicketModel> tickets = controller.fetchAnsweredBy(s);
-                double sum = tickets.stream().mapToDouble(TicketModel::getRating).sum();
-                int total = Integer.parseInt(String.valueOf(tickets.stream().filter(t -> t.getRating() != 0).count()));
+                double sum = tickets.stream().filter(t -> t.getRating() > 0).mapToDouble(TicketModel::getRating).sum();
+                int total = Integer.parseInt(String.valueOf(tickets.stream().filter(t -> t.getRating() > 0).count()));
                 ratings.put(s, sum / total);
             });
 
             final Map<String, Double> ratingsSorting = ratings.entrySet()
                     .stream()
+                    .filter(r -> r.getValue() > 0)
                     .sorted(Map.Entry.comparingByValue())
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
@@ -400,8 +447,9 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                 ratings.put(tre, Integer.parseInt(String.valueOf(tickets.stream().filter(t -> t.getRating() == tre.getRate()).count())));
             }
 
-            int ratingCount = (int) tickets.stream().filter(t -> t.getRating() != 0).count();
-            double avg = tickets.stream().mapToDouble(TicketModel::getRating).sum() / Integer.parseInt(String.valueOf(tickets.stream().filter(t -> t.getRating() != 0).count()));
+            int ratingCount = (int) tickets.stream().filter(t -> t.getRating() > 0).count();
+            int noRatingCount = (int) tickets.stream().filter(t -> t.getRating() == 0).count();
+            double avg = tickets.stream().filter(t -> t.getRating() > 0).mapToDouble(TicketModel::getRating).sum() / Integer.parseInt(String.valueOf(tickets.stream().filter(t -> t.getRating() > 0).count()));
 
             StringBuilder str = new StringBuilder();
 
@@ -420,7 +468,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                         .replace("<average>", String.format("%.2f", avg))
                         .replace("<total>", String.valueOf(tickets.size()))
                         .replace("<total-rate>", String.valueOf(ratingCount))
-                        .replace("<total-pending>", String.valueOf(tickets.size() - ratingCount))
+                        .replace("<total-pending>", String.valueOf(noRatingCount))
                 );
             }
 
@@ -432,6 +480,32 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
         catch (Exception e) {
             m.sendMessage(p, messages.getString("error"), "ticket");
         }
+    }
+
+    private void cancelAllByPlayer(Player p, String[] args) {
+        if (!p.hasPermission("ticketsystem.ticket.admin")) {
+            m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
+            return;
+        }
+
+        if (args.length < 2) {
+            m.sendMessage(p, messages.getString("player.not_found"), "ticket");
+            return;
+        }
+
+        List<TicketModel> tickets = controller.fetchAnsweredBy(args[1]);
+
+        if (tickets.isEmpty()) {
+            m.sendMessage(p, messages.getString("ticket.cancel_all.empty"), "ticket");
+            return;
+        }
+
+        tickets.forEach(t -> {
+            t.setRating((double) TicketRatingEnum.CANCELED.getRate());
+            controller.update(t);
+        });
+
+        m.sendMessage(p, messages.getString("ticket.cancel_all.success").replace("<player>", args[1]), "ticket");
     }
 
     private int validateId(Player p, String[] args) {

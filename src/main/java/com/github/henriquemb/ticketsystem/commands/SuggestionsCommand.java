@@ -13,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class SuggestionsCommand implements CommandExecutor {
@@ -34,21 +35,27 @@ public class SuggestionsCommand implements CommandExecutor {
             return true;
         }
 
-        List<SuggestionModel> suggestions = controller.fetchNotAnswered();
-
-        if (suggestions.isEmpty()) {
-            m.sendMessage(p, messages.getString("suggestion.all_verified"), "suggestion");
-            return true;
-        }
-
+        List<SuggestionModel> suggestions;
+        String options = "";
         int pag = 1;
-        if (args.length > 0) {
+
+        if (args.length >= 1) {
             try {
                 pag = Integer.parseInt(args[0]);
+
+                if (args.length == 2) options = String.join(" ", Arrays.copyOfRange(args, 1, args.length));
+            } catch (Exception e) {
+                options = String.join(" ", args);
             }
-            catch (Exception e) {
-                m.sendMessage(p, messages.getString("pagination.error.invalid"), "suggestion");
-            }
+        }
+
+        if (!options.equals("") && options.split(" ")[0].equalsIgnoreCase("-a"))
+            suggestions = controller.fetchAll();
+        else suggestions = controller.fetchNotAnswered();
+
+        if (suggestions.isEmpty()) {
+            m.sendMessage(p, messages.getString("suggestion.empty"), "suggestion");
+            return true;
         }
 
         Pagination<SuggestionModel> pagination = new Pagination<>(suggestions, 10);
@@ -58,19 +65,21 @@ public class SuggestionsCommand implements CommandExecutor {
             str.append(messages.getString("pagination.header").replace("<self>", String.valueOf(pag)).replace("<total>", String.valueOf(pagination.length())));
 
             for (SuggestionModel s : pagination.getPag(pag)) {
-                str.append(new PrepareMessages().suggestionMessage(messages.getString("suggestion.list"), s));
+                str.append(new PrepareMessages().suggestionViewMessage(messages.getString("suggestion.list"), s));
             }
 
             String footer = String.format("%s", messages.getString("pagination.footer"))
                     .replace("<button-back>", pag > 1 && pagination.length() > 1
-                            ? String.format("[%s](/suggestions %d hover=%s)",
+                            ? String.format("[%s](/suggestions %d %s hover=%s)",
                             messages.getString("pagination.buttons.back.label"),
                             pag - 1,
+                            options,
                             messages.getString("pagination.buttons.back.hover")) : "")
                     .replace("<button-next>", pagination.length() > pag
-                            ? String.format("[%s](/suggestions %d hover=%s)",
+                            ? String.format("[%s](/suggestions %d %s hover=%s)",
                             messages.getString("pagination.buttons.next.label"),
                             pag + 1,
+                            options,
                             messages.getString("pagination.buttons.next.hover")) : "");
 
             str.append(pagination.length() == 1 ? "\n" : footer);

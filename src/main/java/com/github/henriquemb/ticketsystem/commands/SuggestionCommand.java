@@ -7,6 +7,7 @@ import com.github.henriquemb.ticketsystem.database.model.SuggestionModel;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
 import com.github.henriquemb.ticketsystem.util.ResponseMessages;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -104,6 +105,7 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.suggestion.staff"))
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(player, messages.getString("suggestion.new_suggestion")
                         .replace("<button-list>",
                         String.format("[%s](/suggestions hover=%s)",
@@ -125,18 +127,27 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
 
         SuggestionModel suggestion = controller.fetchById(id);
 
-        if (suggestion == null || suggestion.getResponse() != null) {
+        if (suggestion == null) {
             m.sendMessage(p, messages.getString("suggestion.not_found"), "suggestion");
             return;
         }
 
         StringBuilder str = new StringBuilder();
-        for (String msg : messages.getStringList("suggestion.view")) {
-            str.append(msg);
-            str.append("\n");
+
+        if (suggestion.getResponse() != null) {
+            for (String msg : messages.getStringList("suggestion.view-response")) {
+                str.append(msg.concat("\n"));
+            }
+
+            m.sendMessage(p, new PrepareMessages().suggestionViewResponseMessage(str.toString(), suggestion));
+            return;
         }
 
-        m.sendMessage(p, new PrepareMessages().suggestionMessage(str.toString(), suggestion));
+        for (String msg : messages.getStringList("suggestion.view")) {
+            str.append(msg.concat("\n"));
+        }
+
+        m.sendMessage(p, new PrepareMessages().suggestionViewMessage(str.toString(), suggestion));
     }
 
     private void response(Player p, int id, String[] args) {

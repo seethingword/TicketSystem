@@ -6,10 +6,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
 import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 @Data
 public class Model {
@@ -21,12 +21,24 @@ public class Model {
 
     private final Map<Player, Timestamp> supportCommandDelay = new HashMap<>();
 
-    public void sendMessage(Player player, String message) {
-        player.spigot().sendMessage(MineDown.parse(message));
+    public void sendMessage(Player p, String message) {
+        try {
+            p.spigot().sendMessage(MineDown.parse(message));
+        }
+        catch (Exception e) {
+            TicketSystem.getMain().getServer().getConsoleSender().sendMessage(Color.RED + "[TicketSystem] Custom message not found, please check.");
+            p.spigot().sendMessage(MineDown.parse("&cInternal error."));
+        }
     }
 
     public void sendMessage(Player p, String message, String prefix) {
-        sendMessage(p, Objects.requireNonNull(messages.getString(String.format("prefix.%s", prefix))).concat(message));
+        try {
+            sendMessage(p, messages.getString(String.format("prefix.%s", prefix)).concat(message));
+        }
+        catch (Exception e) {
+            TicketSystem.getMain().getServer().getConsoleSender().sendMessage(Color.RED + "[TicketSystem] Custom message not found, please check.");
+            p.spigot().sendMessage(MineDown.parse("&cInternal error."));
+        }
     }
 
     public void broadcastMessage(String message) {

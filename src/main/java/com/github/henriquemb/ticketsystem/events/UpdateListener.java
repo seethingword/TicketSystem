@@ -11,12 +11,12 @@ public class UpdateListener implements Listener {
     private final Model m = TicketSystem.getModel();
 
     @EventHandler
-    public void onVerifyResponse(PlayerJoinEvent e) {
+    public void onUpdate(PlayerJoinEvent e) {
         if (!e.getPlayer().isOp()) return;
 
         new UpdateChecker(TicketSystem.getMain(), 99324).getVersion(version -> {
             if (!TicketSystem.getMain().getDescription().getVersion().equals(version)) {
-                m.sendMessage(e.getPlayer(), "&7[&bTicketSystem&7] &fNova versão disponível [&b[Clique para baixar]](https://www.spigotmc.org/resources/ticketsystem.99324/ hover=&fBaixar)");
+                m.sendMessage(e.getPlayer(), "&7[&bTicketSystem&7] &fAn update is available [&b[Click to download]](https://www.spigotmc.org/resources/99324/ hover=&fDownload)");
             }
         });
     }

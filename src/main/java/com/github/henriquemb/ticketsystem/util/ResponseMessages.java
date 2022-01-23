@@ -12,7 +12,8 @@ public class ResponseMessages {
     public String getTicketResponse(TicketModel ticket) {
         StringBuilder ratings = new StringBuilder();
         for (TicketRatingEnum tre : TicketRatingEnum.values()) {
-            ratings.append(String.format("[%s[%s]](/ticket rate %d %s hover=%s) ", tre.getColor(), tre.getName(), ticket.getId(), tre, tre.format()));
+            if (tre != TicketRatingEnum.CANCELED && tre != TicketRatingEnum.UNAVAILABLE)
+                ratings.append(String.format("[%s[%s]](/ticket rate %d %s hover=%s) ", tre.getColor(), tre.getName(), ticket.getId(), tre, tre.format()));
         }
 
         StringBuilder str = new StringBuilder();
@@ -21,7 +22,7 @@ public class ResponseMessages {
             str.append("\n");
         }
 
-        return new PrepareMessages().ticketMessage(str.toString(), ticket).replace("<ratings>", ratings);
+        return new PrepareMessages().ticketViewMessage(str.toString(), ticket).replace("<ratings>", ratings);
     }
 
     public String getSuggestionResponse(SuggestionModel suggestion) {
@@ -31,6 +32,6 @@ public class ResponseMessages {
             str.append("\n");
         }
 
-        return new PrepareMessages().suggestionMessage(str.toString(), suggestion);
+        return new PrepareMessages().suggestionViewMessage(str.toString(), suggestion);
     }
 }

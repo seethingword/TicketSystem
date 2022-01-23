@@ -4,6 +4,8 @@ import com.github.henriquemb.ticketsystem.TicketSystem;
 import org.bukkit.configuration.file.FileConfiguration;
 
 public enum TicketRatingEnum {
+    CANCELED(-1),
+    UNAVAILABLE(0),
     TERRIBLE(1),
     BAD(2),
     REGULAR(3),

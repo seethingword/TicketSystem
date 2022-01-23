@@ -7,6 +7,7 @@ import com.github.henriquemb.ticketsystem.database.model.ReportModel;
 import com.github.henriquemb.ticketsystem.enums.ReportStatusEnum;
 import com.github.henriquemb.ticketsystem.util.PrepareMessages;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -60,8 +61,8 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
                 String reason = null;
                 String evidence = null;
 
-                if (args.length > 1 && (args[1].toLowerCase().startsWith("https://") || args[1].toLowerCase().startsWith("http://"))) evidence = args[1];
-                if (args.length > 2) reason = String.join(" ", Arrays.copyOfRange(args, evidence != null ? 2 : 1, args.length));
+                if (args.length >= 1 && (args[1].toLowerCase().startsWith("https://") || args[1].toLowerCase().startsWith("http://"))) evidence = args[1];
+                if (args.length >= 2) reason = String.join(" ", Arrays.copyOfRange(args, evidence != null ? 2 : 1, args.length));
 
                 create(p, args[0], evidence, reason);
         }
@@ -130,6 +131,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.report.staff"))
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(                        player,
                         Objects.requireNonNull(messages.getString("report.new_report"))
                                 .replace("<button-list>",
@@ -206,16 +208,15 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
             return;
         }
 
-        p.teleport(t.getLocation());
-
         StringBuilder str = new StringBuilder();
         str.append(messages.getString("report.status.change_to"));
         for (ReportStatusEnum rse : ReportStatusEnum.values()) {
-            if (rse.equals(ReportStatusEnum.WAITING)) return;
-            str.append(String.format("[%s[%s]](/report status %d %s hover=%s)", rse.getColor(), rse.getName(), report.getId(), rse, rse.format()));
+            if (!rse.equals(ReportStatusEnum.WAITING))
+                str.append(String.format("[%s[%s]](/report status %d %s hover=%s) ", rse.getColor(), rse.getName(), report.getId(), rse, rse.format()));
         }
 
         m.sendMessage(p, str.toString());
+        p.teleport(t.getLocation());
     }
 
     private void view(Player p, int id) {
@@ -238,12 +239,20 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
 
         StringBuilder str = new StringBuilder();
 
-        for (String msg : messages.getStringList("report.view")) {
-            str.append(msg);
-            str.append("\n");
+        if (report.getStatus() != ReportStatusEnum.WAITING.getId()) {
+            for (String msg : messages.getStringList("report.view-response")) {
+                str.append(msg.concat("\n"));
+            }
+
+            m.sendMessage(p, new PrepareMessages().reportViewResponseMessage(str.toString(), report));
+            return;
         }
 
-        m.sendMessage(p, new PrepareMessages().reportMessage(str.toString(), report));
+        for (String msg : messages.getStringList("report.view")) {
+            str.append(msg.concat("\n"));
+        }
+
+        m.sendMessage(p, new PrepareMessages().reportViewMessage(str.toString(), report));
     }
 
     private void help(Player p) {

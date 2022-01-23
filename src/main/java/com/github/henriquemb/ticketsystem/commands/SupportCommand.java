@@ -30,7 +30,7 @@ public class SupportCommand implements CommandExecutor {
         }
 
         if (m.getSupportCommandDelay().containsKey(p)) {
-            long time = m.getSupportCommandDelay().get(p).getTime() + 60000L * config.getInt("support-announcement.cooldown");
+            long time = m.getSupportCommandDelay().get(p).getTime() + 60000L * config.getInt("support.cooldown");
 
             if (new Timestamp(System.currentTimeMillis()).before(new Timestamp(time))) {
                 m.sendMessage(p, messages.getString("support-announcement.cooldown.message"), "ticket");

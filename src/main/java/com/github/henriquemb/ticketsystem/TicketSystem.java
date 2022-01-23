@@ -6,10 +6,10 @@ import com.github.henriquemb.ticketsystem.events.ListenerRegister;
 import com.github.henriquemb.ticketsystem.util.CustomConfig;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.SneakyThrows;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
 import java.util.Locale;
 
 public final class TicketSystem extends JavaPlugin {
@@ -20,19 +20,25 @@ public final class TicketSystem extends JavaPlugin {
     @Getter @Setter
     private static FileConfiguration messages;
 
-    @SneakyThrows
     @Override
     public void onEnable() {
         Locale.setDefault(Locale.US);
 
         setMain(this);
 
-        setMessages(CustomConfig.createCustomConfig("messages"));
+        if (!new File(getDataFolder().getAbsolutePath().concat("/config.yml")).exists()) {
+            getConfig().options().copyDefaults(true);
+            getMain().saveConfig();
+        }
+
+        CustomConfig.createCustomConfig("language/portuguese");
+        CustomConfig.createCustomConfig("language/english");
+
+        if (new File(getDataFolder().getAbsolutePath().concat("/language/") + getConfig().getString("language") + ".yml").exists())
+            setMessages(CustomConfig.createCustomConfig("language/".concat(getConfig().getString("language"))));
+        else setMessages(CustomConfig.createCustomConfig("language/portuguese"));
 
         setModel(new Model());
-
-        getMain().getConfig().options().copyDefaults(true);
-        getMain().saveConfig();
 
         new CreateDatabase();
 

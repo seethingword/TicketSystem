@@ -5,6 +5,12 @@ prefix:
   suggestion: "&8[&7Suggestions&8] &7» "
 status:
   ticket:
+    canceled:
+      name: "Cancelado"
+      color: "&8"
+    unavailable:
+      name: "Não avaliado"
+      color: "&7"
     terrible:
       name: "Péssimo"
       color: "&4"
@@ -50,25 +56,39 @@ pagination:
     not_found: "&cPágina não encontrada"
   buttons:
     back:
-      label: "&aVoltar"
-      hover: "&aVoltar"
+      label: "&f[&bVoltar&f]"
+      hover: "&fVoltar"
     next:
-      label: "&aPróxima"
-      hover: "&aPróxima"
+      label: "&f[&bPróxima&f]"
+      hover: "&fPróxima"
 ticket:
   use_correct: "&cUso correto: /ticket <dúvida>"
   not_found: "&cTicket não encontrado ou já foi respondido"
-  all_verified: "&aNenhum ticket disponível"
+  empty: "&aNenhum ticket encontrado"
   shot: "&cPor favor, explique melhor sua dúvida"
   success: "&aTicket enviado com sucesso"
   pending: "&bAtualmente temos &f<total> &btickets pendentes"
+  rating_canceled: "&aAvaliação cancelada com sucesso"
+  is_canceled: "&cA nota já está cancelada."
   new_ticket: "&bNovo ticket recebido <button-list>"
+  cancel_all:
+    empty: "&aNenhum ticket encontrado"
+    success: "&cTodos os tickets de <player> tiveram a nota cancelada."
   view:
     - "\n&b&m--------------------------------------------------"
     - "&eId: &f#<id>"
     - "&eJogador: &f<player>"
     - "&eDúvida: &f<ticket>"
     - "<button-response> <button-teleport>"
+    - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eDúvida: &f<ticket>"
+    - "&eResposta: &f<response>"
+    - "&eRespondido por: &f<respondedBy>"
+    - "&eNota: &f<rating> <button-invalid_rating>"
     - "&b&m--------------------------------------------------"
   response:
     use_correct: "&cUso correto: /ticket response <id> <resposta>"
@@ -126,10 +146,13 @@ ticket:
     stats:
       label: "&a[Detalhes]"
       hover: "&aDetalhes de &f<player>"
+    invalid_rating:
+      label: "&c[Nota inválida]"
+      hover: "&cCancelar nota"
 report:
   use_correct: "&cUso correto: /report <jogador> [prova] [motivo]"
   not_found: "&cReport não encontrado ou já foi verificado"
-  all_verified: "&aTodos os reports foram verificados :D"
+  empty: "&aNenhum report encontrado :D"
   not_yourself: "&cVocê não pode reportar a si mesmo"
   success: "&aJogador reportado com sucesso, obrigado"
   pending: "&bAtualmente temos &f<total> &breports pendentes"
@@ -149,6 +172,15 @@ report:
     - "&eStatus: <status>"
     - "<button-teleport>"
     - "&b&m--------------------------------------------------"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eReportado: &f<reported>"
+    - "&eMotivo: &f<reason>"
+    - "&eProva: &f<evidence>"
+    - "&eStatus: <status>"
+    - "&b&m--------------------------------------------------"
   help:
     - "\n&b&m--------------------------------------------------"
     - "&e/report &7- &fReporta um jogador"
@@ -157,7 +189,7 @@ report:
     - "&e/report view &7- &fMostra detalhes de um report"
     - "&e/report verify &7- &fMarca um report como verificado"
     - "&b&m--------------------------------------------------"
-  list: "\n&eReportado: &f<reported> &7| &eMotivo: &f<reason-shot> <button-view> <button-teleport>"
+  list: "&eReportado: &f<reported> &7| &eMotivo: &f<reason-shot> <button-view> <button-teleport>"
   buttons:
     list:
       label: "[Clique para listar]"
@@ -171,7 +203,7 @@ report:
 suggestion:
   use_correct: "&cUso correto: /suggestion <sugestão>"
   not_found: "&cSugestão não encontrado ou já foi respondida"
-  all_verified: "&aTodas sugestões foram verificadas :D"
+  empty: "&aNenhuma sugestão encontrada :C"
   shot: "Por favor, explique melhor a sua sugestão"
   success: "&aSugestão enviada com sucesso"
   pending: "&bAtualmente temos &f<total> &bsugestões aguardando resposta."
@@ -182,6 +214,14 @@ suggestion:
     - "&eJogador: &f<player>"
     - "&eSugestão: &f<suggestion>"
     - "<button-response>"
+    - "&b&m--------------------------------------------------\n"
+  view-response:
+    - "\n&b&m--------------------------------------------------"
+    - "&eId: &f#<id>"
+    - "&eJogador: &f<player>"
+    - "&eSugestão: &f<suggestion>"
+    - "&eResposta: &f<response>"
+    - "&eRespondido por: &f<respondedBy>"
     - "&b&m--------------------------------------------------\n"
   response:
     use_correct: "&cUso correto: /suggestion response <id> <resposta>"
