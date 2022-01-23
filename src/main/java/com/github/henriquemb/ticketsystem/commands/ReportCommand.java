@@ -130,7 +130,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
         m.sendMessage(p, messages.getString("report.success"), "report");
 
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (player.hasPermission("ticketsystem.report.staff"))
+            if (player.hasPermission("ticketsystem.report.staff")) {
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(                        player,
                         Objects.requireNonNull(messages.getString("report.new_report"))
@@ -141,6 +141,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
                                 ),
                         "report"
                 );
+            }
         });
     }
 

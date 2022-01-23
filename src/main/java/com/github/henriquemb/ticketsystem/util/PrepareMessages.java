@@ -158,7 +158,7 @@ public class PrepareMessages {
                 .replace("<response>", verifyNull(ticket.getResponse(), ""))
                 .replace("<respondedBy>", verifyNull(ticket.getRespondedBy(), ""))
                 .replace("<rating>", rating.format())
-                .replace("<button-invalid_rating>", TicketRatingEnum.CANCELED.getRate() != ticket.getRating() ?
+                .replace("<button-invalid_rating>", TicketRatingEnum.CANCELED.getRate() != ticket.getRating() && TicketRatingEnum.UNAVAILABLE.getRate() != ticket.getRating() ?
                         String.format("[%s](/ticket rate %d CANCELED hover=%s)",
                                 messages.getString("ticket.buttons.invalid_rating.label"),
                                 ticket.getId(),

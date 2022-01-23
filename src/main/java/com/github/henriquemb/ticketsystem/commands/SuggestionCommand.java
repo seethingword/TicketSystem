@@ -104,13 +104,14 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
         m.sendMessage(p, messages.getString("suggestion.success"), "suggestion");
 
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (player.hasPermission("ticketsystem.suggestion.staff"))
+            if (player.hasPermission("ticketsystem.suggestion.staff")) {
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(player, messages.getString("suggestion.new_suggestion")
                         .replace("<button-list>",
-                        String.format("[%s](/suggestions hover=%s)",
-                                messages.getString("suggestion.buttons.list.label"),
-                                messages.getString("suggestion.buttons.list.hover"))),"suggestion");
+                                String.format("[%s](/suggestions hover=%s)",
+                                        messages.getString("suggestion.buttons.list.label"),
+                                        messages.getString("suggestion.buttons.list.hover"))),"suggestion");
+            }
         });
     }
 

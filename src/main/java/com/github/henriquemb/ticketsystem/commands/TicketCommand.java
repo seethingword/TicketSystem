@@ -156,7 +156,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
         m.sendMessage(p, messages.getString("ticket.success"), "ticket");
 
         Bukkit.getOnlinePlayers().forEach(player -> {
-            if (player.hasPermission("ticketsystem.ticket.staff"))
+            if (player.hasPermission("ticketsystem.ticket.staff")) {
                 player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(player,
                         Objects.requireNonNull(messages.getString("ticket.new_ticket"))
@@ -167,6 +167,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                                 ),
                         "ticket"
                 );
+            }
         });
     }
 
@@ -255,6 +256,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                 new ResponseMessages().getTicketResponse(ticket) +
                 messages.getString("ticket.response.message.footer");
 
+        t.playSound(t.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
         m.sendMessage(t, str);
     }
 
@@ -333,6 +335,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
         Bukkit.getOnlinePlayers().forEach(player -> {
             if (player.hasPermission("ticketsystem.ticket.staff")) {
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
                 m.sendMessage(player,
                         Objects.requireNonNull(messages.getString("ticket.rating.announcement"))
                                 .replace("<player>", ticket.getRespondedBy())

@@ -5,6 +5,7 @@ import com.github.henriquemb.ticketsystem.TicketSystem;
 import com.github.henriquemb.ticketsystem.database.controller.TicketController;
 import com.github.henriquemb.ticketsystem.database.model.TicketModel;
 import com.github.henriquemb.ticketsystem.util.ResponseMessages;
+import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -36,6 +37,7 @@ public class TicketListener implements Listener {
         }
         str.append(messages.getString("ticket.response.message.footer"));
 
+        p.playSound(p.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 100, 1);
         m.sendMessage(p, str.toString());
     }
 
