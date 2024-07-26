@@ -41,15 +41,12 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "view":
-            case "ver":
                 view(p, validateId(p, args));
                 break;
             case "response":
-            case "responder":
                 response(p, validateId(p, args), args);
                 break;
             case "help":
-            case "ajuda":
                 help(p);
                 break;
             default:
@@ -71,9 +68,7 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
 
         switch (args[0].toLowerCase()) {
             case "response":
-            case "responder":
             case "view":
-            case "ver":
                 controller.fetchNotAnswered().forEach(r -> {
                     tb.add(String.valueOf(r.getId()));
                 });
@@ -116,7 +111,7 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
     }
 
     private void view(Player p, int id) {
-        if (!p.hasPermission("ticketsystem.suggestion.staff")) {
+        if (!p.hasPermission("ticketsystem.suggestion.staff.view")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "suggestion");
             return;
         }
@@ -152,7 +147,7 @@ public class SuggestionCommand implements CommandExecutor, TabCompleter {
     }
 
     private void response(Player p, int id, String[] args) {
-        if (!p.hasPermission("ticketsystem.suggestion.staff")) {
+        if (!p.hasPermission("ticketsystem.suggestion.staff.response")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "suggestion");
             return;
         }

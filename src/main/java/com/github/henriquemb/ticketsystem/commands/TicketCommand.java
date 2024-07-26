@@ -46,28 +46,22 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
                 cancelAllByPlayer(p, args);
                 break;
             case "view":
-            case "ver":
                 view(p, validateId(p, args));
                 break;
             case "response":
-            case "responder":
                 response(p, validateId(p, args), args);
                 break;
             case "rate":
-            case "avaliar":
                 rate(p, validateId(p, args), args);
                 break;
             case "stats":
-            case "estatisticas":
                 stats(p, args);
                 break;
             case "teleport":
-            case "teleportar":
             case "tp":
                 teleport(p, validateId(p, args));
                 break;
             case "help":
-            case "ajuda":
                 help(p);
                 break;
             default:
@@ -118,13 +112,9 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
 
             switch (args[0].toLowerCase()) {
                 case "rate":
-                case "avaliar":
                 case "reponse":
-                case "responder":
                 case "teleport":
-                case "teleportar":
                 case "view":
-                case "ver":
                     controller.fetchNotAnswered().forEach(r -> {
                         tb.add(String.valueOf(r.getId()));
                     });
@@ -172,7 +162,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void view(Player p, int id) {
-        if (!p.hasPermission("ticketsystem.ticket.staff")) {
+        if (!p.hasPermission("ticketsystem.ticket.staff.view")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return;
         }
@@ -213,7 +203,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void response(Player p, int id, String[] args) {
-        if (!p.hasPermission("ticketsystem.ticket.staff")) {
+        if (!p.hasPermission("ticketsystem.ticket.staff.response")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return;
         }
@@ -271,7 +261,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void rate(Player p, int id, String[] args) {
-        if (!p.hasPermission("ticketsystem.ticket.use")) {
+        if (!p.hasPermission("ticketsystem.ticket.use.rate")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return;
         }
@@ -296,7 +286,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
         TicketRatingEnum tre = TicketRatingEnum.valueOf(args[2]);
 
         if (tre == TicketRatingEnum.CANCELED) {
-            if (!p.hasPermission("ticketsystem.ticket.admin")) {
+            if (!p.hasPermission("ticketsystem.ticket.admin.cancelall")) {
                 m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
                 return;
             }
@@ -345,7 +335,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void teleport(Player p, int id) {
-        if (!p.hasPermission("ticketsystem.ticket.staff")) {
+        if (!p.hasPermission("ticketsystem.ticket.staff.teleport")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return;
         }
@@ -374,7 +364,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void stats(Player p, String[] args) {
-        if (!p.hasPermission("ticketsystem.ticket.admin")) {
+        if (!p.hasPermission("ticketsystem.ticket.admin.stats")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return;
         }
@@ -486,7 +476,7 @@ public class TicketCommand implements CommandExecutor, TabCompleter {
     }
 
     private void cancelAllByPlayer(Player p, String[] args) {
-        if (!p.hasPermission("ticketsystem.ticket.admin")) {
+        if (!p.hasPermission("ticketsystem.ticket.admin.cancelall")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return;
         }

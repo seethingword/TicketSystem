@@ -30,7 +30,7 @@ public class SuggestionsCommand implements CommandExecutor {
 
         Player p = (Player) sender;
 
-        if (!p.hasPermission("ticketsystem.suggestion.staff")) {
+        if (!p.hasPermission("ticketsystem.staff.list")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "suggestion");
             return true;
         }

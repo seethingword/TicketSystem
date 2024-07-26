@@ -31,12 +31,10 @@ public final class TicketSystem extends JavaPlugin {
             getMain().saveConfig();
         }
 
-        CustomConfig.createCustomConfig("language/portuguese");
         CustomConfig.createCustomConfig("language/english");
 
         if (new File(getDataFolder().getAbsolutePath().concat("/language/") + getConfig().getString("language") + ".yml").exists())
             setMessages(CustomConfig.createCustomConfig("language/".concat(getConfig().getString("language"))));
-        else setMessages(CustomConfig.createCustomConfig("language/portuguese"));
 
         setModel(new Model());
 

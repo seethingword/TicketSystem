@@ -45,16 +45,13 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
                 status(p, validateId(p, args), args);
                 break;
             case "teleport":
-            case "teleportar":
             case "tp":
                 teleport(p, validateId(p, args));
                 break;
             case "view":
-            case "ver":
                 view(p, validateId(p, args));
                 break;
             case "help":
-            case "ajuda":
                 help(p);
                 break;
             default:
@@ -93,7 +90,6 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
                 case "teleport":
                 case "tp":
                 case "view":
-                case "ver":
                     List<String> players = new ArrayList<>();
                     Bukkit.getOnlinePlayers().forEach(player -> players.add(player.getName()));
 
@@ -146,7 +142,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
     }
 
     private void status(Player p, int id, String[] args) {
-        if (!p.hasPermission("ticketsystem.report.staff")) {
+        if (!p.hasPermission("ticketsystem.report.staff.status")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "report");
             return;
         }
@@ -185,7 +181,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
     }
 
     private void teleport(Player p, int id) {
-        if (!p.hasPermission("ticketsystem.report.staff")) {
+        if (!p.hasPermission("ticketsystem.report.staff.teleport")) {
             m.sendMessage(p, messages.getString("permission.no_permission", "report"));
             return;
         }
@@ -221,7 +217,7 @@ public class ReportCommand implements CommandExecutor, TabCompleter {
     }
 
     private void view(Player p, int id) {
-        if (!p.hasPermission("ticketsystem.report.staff")) {
+        if (!p.hasPermission("ticketsystem.report.staff.view")) {
             m.sendMessage(p, messages.getString("permission.no-permission"));
             return;
         }

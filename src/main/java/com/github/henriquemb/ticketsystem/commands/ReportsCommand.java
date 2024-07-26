@@ -32,7 +32,7 @@ public class ReportsCommand implements CommandExecutor {
 
         Player p = (Player) sender;
 
-        if (!p.hasPermission("ticketsystem.report.staff")) {
+        if (!p.hasPermission("ticketsystem.staff.list")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "report");
             return true;
         }

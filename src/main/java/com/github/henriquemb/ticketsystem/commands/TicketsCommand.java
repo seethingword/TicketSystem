@@ -33,7 +33,7 @@ public class TicketsCommand implements CommandExecutor, TabCompleter {
 
         Player p = (Player) sender;
 
-        if (!p.hasPermission("ticketsystem.ticket.staff")) {
+        if (!p.hasPermission("ticketsystem.staff.list")) {
             m.sendMessage(p, messages.getString("permission.no_permission"), "ticket");
             return true;
         }

@@ -16,7 +16,7 @@ public class TicketSystemCommand implements CommandExecutor, TabCompleter {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!sender.hasPermission("ticketsystem.admin")) {
+        if (!sender.hasPermission("ticketsystem.admin.reload")) {
             m.sendMessage((Player) sender, TicketSystem.getMessages().getString("permission.no_permission"));
             return true;
         }
