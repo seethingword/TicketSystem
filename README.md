@@ -51,3 +51,5 @@ Plugin de tickets, denúncias e sugestões para Minecraft.
 ticketsystem reload ou ts reload
 ```
 Permissão: ```ticketsystem.admin```
+
+UPDATED PERMISSIONS - https://github.com/seethingword/TicketSystem/wiki/Updated-Permissions
